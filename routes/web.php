@@ -2,6 +2,8 @@
 
 use App\Http\Router;
 
+$thisIsATest = true; // To prevent middleware from blocking during testing
+
 $router = new Router();
 
 // Public routes
