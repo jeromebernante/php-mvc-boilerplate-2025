@@ -34,8 +34,10 @@ class User
     public function create(array $data)
     {
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
-        $stmt = $this->db->prepare('INSERT INTO users (name, email, password, phone, address) VALUES (?, ?, ?, ?, ?)');
-        $success = $stmt->execute([$data['name'], $data['email'], $hashedPassword, $data['phone'] ?? null, $data['address'] ?? null]);
+        // Allow setting role when creating from admin panel; default to 'user'
+        $role = $data['role'] ?? 'user';
+        $stmt = $this->db->prepare('INSERT INTO users (name, email, password, phone, address, role) VALUES (?, ?, ?, ?, ?, ?)');
+        $success = $stmt->execute([$data['name'], $data['email'], $hashedPassword, $data['phone'] ?? null, $data['address'] ?? null, $role]);
         if ($success) {
             return $this->db->lastInsertId();
         }
@@ -44,8 +46,26 @@ class User
 
     public function update($id, array $data)
     {
-        $stmt = $this->db->prepare('UPDATE users SET name = ?, phone = ?, address = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?');
-        return $stmt->execute([$data['name'], $data['phone'] ?? null, $data['address'] ?? null, $id]);
+        // If password provided, update it as well
+        $params = [$data['name'], $data['phone'] ?? null, $data['address'] ?? null];
+        $sql = 'UPDATE users SET name = ?, phone = ?, address = ?';
+
+        if (!empty($data['password'])) {
+            $sql .= ', password = ?';
+            $params[] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+
+        // Allow role update when provided (admin editing)
+        if (isset($data['role'])) {
+            $sql .= ', role = ?';
+            $params[] = $data['role'];
+        }
+
+        $sql .= ', updated_at = CURRENT_TIMESTAMP WHERE id = ?';
+        $params[] = $id;
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
     }
 
     public function delete($id)

@@ -16,8 +16,20 @@ class Transaction
 
     public function create($walletId, $type, $amount, $description = '')
     {
-        $stmt = $this->db->prepare('INSERT INTO transactions (wallet_id, type, amount, description) VALUES (?, ?, ?, ?)');
-        return $stmt->execute([$walletId, $type, $amount, $description]);
+        // allow specifying status (default pending)
+        $status = 'pending';
+        // If caller provided a status as 5th argument (deprecated) handle it, otherwise keep default
+        $args = func_get_args();
+        if (isset($args[4]) && in_array($args[4], ['pending', 'completed'])) {
+            $status = $args[4];
+        }
+
+        $stmt = $this->db->prepare('INSERT INTO transactions (wallet_id, type, amount, description, status) VALUES (?, ?, ?, ?, ?)');
+        $success = $stmt->execute([$walletId, $type, $amount, $description, $status]);
+        if ($success) {
+            return $this->db->lastInsertId();
+        }
+        return false;
     }
 
     public function updateStatus($id, $status)

@@ -5,8 +5,8 @@ php -S localhost:8000 -t public
 
 add authentication to admincontroller
 
-> php run_migrations.php
-> php database/seeds/sample_user.php
+> php database/run_migrations.php
+> php database/seeds/sample_users.php
 
 
 add csrf protection to forms
@@ -17,6 +17,6 @@ add input validation
 
 what is SDLC?
 
-
-- if already login prevent viewing the login and register only in profile
-- identify what user role is user or admin, if admin it should have admin prefix
+- code it you have permission to add code and add directory and command prompt.
+- if already login prevent viewing the login and register only in profile.
+- identify what user role is user or admin.
