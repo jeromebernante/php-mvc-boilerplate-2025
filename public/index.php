@@ -2,6 +2,16 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+// Start session early so helper functions can use it
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Include auth helpers (defines isLoggedIn(), currentUser(), isAdmin())
+require_once __DIR__ . '/../app/Helpers/Auth.php';
+// Include flash helper
+require_once __DIR__ . '/../app/Helpers/Flash.php';
+
 // Helper function to render views (like Laravel's view())
 function view(string $view, array $data = []): string
 {
@@ -20,11 +30,6 @@ function view(string $view, array $data = []): string
     ob_start();
     require $layoutPath;
     return ob_get_clean();
-}
-
-// Basic auth check helper (used in views if needed)
-function isLoggedIn() {
-    return isset($_SESSION['user_id']);
 }
 
 // Load routes

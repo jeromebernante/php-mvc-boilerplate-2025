@@ -1,4 +1,5 @@
 <!-- app/Views/admin/dashboard.php -->
+<?php require __DIR__ . '/_nav.php'; ?>
 <h1><?= $title ?? 'Admin Dashboard' ?></h1>
 <?php if (isset($error)): ?>
     <p style="color: red;"><?= htmlspecialchars($error) ?></p>

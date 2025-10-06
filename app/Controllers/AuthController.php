@@ -9,6 +9,16 @@ class AuthController
 {
     public function register()
     {
+        // If already logged in, redirect away from register page
+        if (isLoggedIn()) {
+            if (isAdmin()) {
+                header('Location: /admin/dashboard');
+            } else {
+                header('Location: /profile');
+            }
+            exit;
+        }
+
         if ($_POST) {
             $user = new User();
             $userId = $user->create($_POST);
@@ -28,6 +38,16 @@ class AuthController
 
     public function login()
     {
+        // If already logged in, don't show login page
+        if (isLoggedIn()) {
+            if (isAdmin()) {
+                header('Location: /admin/dashboard');
+            } else {
+                header('Location: /profile');
+            }
+            exit;
+        }
+
         if ($_POST) {
             $user = (new User())->findByEmail($_POST['email']);
             if ($user && password_verify($_POST['password'], $user['password'])) {

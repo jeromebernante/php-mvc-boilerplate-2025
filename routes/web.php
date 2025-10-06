@@ -23,11 +23,18 @@ $router->get('deposit', 'UserController@deposit');
 $router->post('deposit', 'UserController@deposit');
 $router->get('withdraw', 'UserController@withdraw');
 $router->post('withdraw', 'UserController@withdraw');
+// Transaction history for user
+$router->get('transactions', 'UserController@transactions');
 
 // Admin routes
 $router->group(['prefix' => 'admin'], function(Router $router) {
     $router->get('dashboard', 'AdminController@dashboard');
+    $router->get('profile', 'AdminController@profile');
     $router->get('users', 'Admin\\UserController@index');
+    $router->get('users/{id}/deposit', 'Admin\\UserController@deposit');
+    $router->post('users/{id}/deposit', 'Admin\\UserController@deposit');
+    $router->get('users/{id}/withdraw', 'Admin\\UserController@withdraw');
+    $router->post('users/{id}/withdraw', 'Admin\\UserController@withdraw');
     $router->get('users/{id}/edit', 'Admin\\UserController@edit');
     $router->post('users/{id}/edit', 'Admin\\UserController@edit');
     $router->get('users/{id}/delete', 'Admin\\UserController@delete');

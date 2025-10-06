@@ -17,7 +17,19 @@ class TransactionController extends BaseAdminController
     public function approve($id)
     {
         $this->checkAdmin();
-        (new Transaction())->updateStatus($id, 'completed');
+        $transactionModel = new Transaction();
+        $tx = $transactionModel->find($id);
+        if ($tx && ($tx['status'] ?? '') !== 'completed') {
+            // Apply wallet balance change
+            $walletId = $tx['wallet_id'];
+            if ($tx['type'] === 'deposit') {
+                (new \App\Models\Wallet())->updateBalance($walletId, $tx['amount'], 'deposit');
+            } else {
+                (new \App\Models\Wallet())->updateBalance($walletId, $tx['amount'], 'withdraw');
+            }
+            $transactionModel->updateStatus($id, 'completed');
+            flash('success', 'Transaction approved and balance updated.');
+        }
         header('Location: /admin/transactions');
         exit;
     }
